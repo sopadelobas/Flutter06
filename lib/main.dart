@@ -43,6 +43,13 @@ class _AgendamentoEventoTelaState extends State<AgendamentoEventoTela> {
   late double _quantidadeConvidados;
   late Visibilidade _visibilidadeSelecionada;
 
+   static const Map<String, bool> _servicosPadrao = {
+    'Buffet' : false,
+    'Fotógrafo': false,
+    'Decoração': false,
+    'DJ': false,
+   };
+
   @override
   void initState() {
     super.initState();
