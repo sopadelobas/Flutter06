@@ -51,9 +51,8 @@ class _AgendamentoEventoTelaState extends State<AgendamentoEventoTela> {
     'Vegano',
   ];
 
- static const List<String> _tagsPadrao = [];
+  static const List<String> _tagsPadrao = [];
   static const bool _lembretePadrao = true;
-
 
   late DateTime _dataSelecionada;
   late TimeOfDay _horarioSelecionado;
@@ -80,7 +79,6 @@ class _AgendamentoEventoTelaState extends State<AgendamentoEventoTela> {
       _servicosSelecionados = Map<String, bool>.from(_servicosPadrao);
       _tagsSelecionadas = List<String>.from(_tagsPadrao);
       _notificacaoAtiva = _lembretePadrao;
-
     });
     print('[DEBUT] Formulário resetado para os valores padrão');
   }
@@ -119,7 +117,7 @@ class _AgendamentoEventoTelaState extends State<AgendamentoEventoTela> {
       setState(() {
         _dataSelecionada = data;
       });
-      print('[DEBUT - DatePicker] Data selecionada: $data');
+      print('[DEBUG - DatePicker] Data selecionada: $data');
     }
   }
 
@@ -134,7 +132,7 @@ class _AgendamentoEventoTelaState extends State<AgendamentoEventoTela> {
         _horarioSelecionado = horario;
       });
       print(
-        '[DEBUT - TimePicker] Horário selecionado: ${horario.format(context)}',
+        '[DEBUG - TimePicker] Horário selecionado: ${horario.format(context)}',
       );
     }
   }
@@ -327,19 +325,85 @@ class _AgendamentoEventoTelaState extends State<AgendamentoEventoTela> {
             ),
             const Divider(height: 32),
 
-            SwitchListFile(title: const Text('Enviar lembrete automático'),
-            subtitle: const Text('Notificar convidados 24 horas antes do evento',)
-            value: _notificacaoAtiva,
-            onChanged: (bool ativo) {
-              setState(() {
-                _notificacaoAtiva = ativo;
-              });
-              print(
-                '[DEBUG - Switch] Notificação automática alterada para: $ativo',
-              );
-            },
+            SwitchListTile(
+              title: const Text('Enviar lembrete automático'),
+              subtitle: const Text(
+                'Notificar convidados 24 horas antes do evento',
+              ),
+              value: _notificacaoAtiva,
+              onChanged: (bool ativo) {
+                setState(() {
+                  _notificacaoAtiva = ativo;
+                });
+                print(
+                  '[DEBUG - Switch] Notificação automática alterada para: $ativo',
+                );
+              },
             ),
             const Divider(height: 32),
+
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: _resetarValores,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.red,
+                      side: const BorderSide(color: Colors.red),
+                    ),
+                    child: const Text('Cancelar'),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+
+                      _salvarFormulario();
+                      showModalBottomSheet<void>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Container(
+                            padding: const EdgeInsets.all(16),
+                            height: 300,
+                            color: Colors.purple,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: .center,
+                                mainAxisSize: .min,
+                                children: <Widget>[
+                                  Text(
+                                    'Data: ${_dataSelecionada.day}/${_dataSelecionada.month}/${_dataSelecionada.year}\n'
+                                    'Horário: ${_horarioSelecionado.format(context)}\n'
+                                    'Tipo de evento: $_tipoEventoSelecionado\n'
+                                    'Estimativa de convidados: ${_quantidadeConvidados.round()}\n'
+                                    'Visibilidade: $_visibilidadeSelecionada\n'
+                                    'Serviços adicionais: $_servicosSelecionados\n'
+                                    'Restrições alimentares: ${_tagsSelecionadas.join(", ")}\n'
+                                    'Lembrete automático: $_notificacaoAtiva\n', 
+                                    textAlign: TextAlign.left,
+                                  ),
+                                  ElevatedButton(
+                                    child: const Text('Fechar'),
+                                    onPressed: () => Navigator.pop(context),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('Salvar'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
           ],
         ),
       ),
