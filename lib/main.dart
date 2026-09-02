@@ -44,12 +44,15 @@ class _AgendamentoEventoTelaState extends State<AgendamentoEventoTela> {
     'DJ': false,
   };
 
- static const List<String> _tagsDisponiveis = [
+  static const List<String> _tagsDisponiveis = [
     'Vegetariano',
     'Sem glúten',
     'Sem lactose',
     'Vegano',
   ];
+
+ static const List<String> _tagsPadrao = [];
+  static const bool _lembretePadrao = true;
 
 
   late DateTime _dataSelecionada;
@@ -58,6 +61,8 @@ class _AgendamentoEventoTelaState extends State<AgendamentoEventoTela> {
   late double _quantidadeConvidados;
   late Visibilidade _visibilidadeSelecionada;
   late Map<String, bool> _servicosSelecionados;
+  late List<String> _tagsSelecionadas;
+  late bool _notificacaoAtiva;
 
   @override
   void initState() {
@@ -73,6 +78,9 @@ class _AgendamentoEventoTelaState extends State<AgendamentoEventoTela> {
       _quantidadeConvidados = _convidadosPadrao;
       _visibilidadeSelecionada = _visibilidadePadrao;
       _servicosSelecionados = Map<String, bool>.from(_servicosPadrao);
+      _tagsSelecionadas = List<String>.from(_tagsPadrao);
+      _notificacaoAtiva = _lembretePadrao;
+
     });
     print('[DEBUT] Formulário resetado para os valores padrão');
   }
@@ -89,6 +97,8 @@ class _AgendamentoEventoTelaState extends State<AgendamentoEventoTela> {
     print('Estimativa de convidados: ${_quantidadeConvidados.round()}');
     print('Visibilidade: $_visibilidadeSelecionada');
     print('Serviços adicionais: $_servicosSelecionados');
+    print('Restrições alimentares (tags): $_tagsSelecionadas');
+    print('Lembrete automático: $_notificacaoAtiva');
     print('============================');
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -286,6 +296,50 @@ class _AgendamentoEventoTelaState extends State<AgendamentoEventoTela> {
                 );
               }).toList(),
             ),
+            const Divider(height: 32),
+
+            Text(
+              'Restrições alimentares (tags)',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8.0,
+              children: _tagsDisponiveis.map((tag) {
+                final estaSelecionado = _tagsSelecionadas.contains(tag);
+                return FilterChip(
+                  label: Text(tag),
+                  selected: estaSelecionado,
+                  onSelected: (bool selecionado) {
+                    setState(() {
+                      if (selecionado) {
+                        _tagsSelecionadas.add(tag);
+                      } else {
+                        _tagsSelecionadas.remove(tag);
+                      }
+                    });
+                    print(
+                      '[DEBUG - Chip] Tag "$tag" ${selecionado ? "adicionada" : "removida "}. Lista Atual: $_tagsSelecionadas',
+                    );
+                  },
+                );
+              }).toList(),
+            ),
+            const Divider(height: 32),
+
+            SwitchListFile(title: const Text('Enviar lembrete automático'),
+            subtitle: const Text('Notificar convidados 24 horas antes do evento',)
+            value: _notificacaoAtiva,
+            onChanged: (bool ativo) {
+              setState(() {
+                _notificacaoAtiva = ativo;
+              });
+              print(
+                '[DEBUG - Switch] Notificação automática alterada para: $ativo',
+              );
+            },
+            ),
+            const Divider(height: 32),
           ],
         ),
       ),
